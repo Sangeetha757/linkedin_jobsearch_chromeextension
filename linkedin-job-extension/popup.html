@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Search Assistant</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-brand">
+      <span class="header-icon">💼</span>
+      <h1 class="header-title">Job Search Assistant</h1>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button id="btn-header-dashboard" class="btn-icon-header" title="Open Full Tracker Dashboard ↗">📊 Dashboard</button>
+      <span class="phase-badge">Phase 6: Tracker</span>
+    </div>
+  </header>
+
+  <!-- ── Main ────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Status banner -->
+    <div id="status-banner" class="status-banner hidden">
+      <span id="status-icon">ℹ️</span>
+      <span id="status-text">Scanning page...</span>
+    </div>
+
+    <!-- Active Job Content (Tabs & Panels) -->
+    <div id="job-content" class="job-content hidden">
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="tab-overview" title="Job Overview">
+          <span>📋</span> Overview
+        </button>
+        <button class="tab-btn" data-tab="tab-match" title="Skills Match Score">
+          <span>🎯</span> Match <span id="match-score-badge" class="badge-score hidden">0%</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-skills" title="All Job Skills">
+          <span>🏷️</span> Skills <span id="tab-skills-count" class="badge-count">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-ai" title="AI Cover Letter & Interview Prep">
+          <span>🤖</span> AI Tools
+        </button>
+        <button class="tab-btn" data-tab="tab-tracker" title="Job Applications Tracker">
+          <span>📊</span> Tracker <span id="tab-tracker-count" class="badge-count">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-profile" title="My Skills Profile">
+          <span>👤</span> Profile
+        </button>
+        <button class="tab-btn" data-tab="tab-desc" title="Job Description">
+          <span>📄</span> Details
+        </button>
+      </nav>
+
+      <!-- Tab 1: Overview -->
+      <section id="tab-overview" class="tab-panel active card">
+        
+        <!-- Match Score Highlight Banner -->
+        <div id="overview-match-banner" class="match-summary-card hidden">
+          <div class="match-gauge-box">
+            <span id="match-percent" class="match-percent-text">0%</span>
+            <span class="match-label">Match</span>
+          </div>
+          <div class="match-details-box">
+            <p id="match-verdict" class="match-verdict-text">Calculating match...</p>
+            <p id="match-stats-text" class="match-sub-text">0 of 0 skills matched</p>
+            <div class="progress-bar-bg">
+              <div id="match-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-info">
+          <p class="job-field-label">Job Title</p>
+          <p class="job-title" id="job-title">—</p>
+
+          <p class="job-field-label">Company</p>
+          <p class="job-company" id="job-company">—</p>
+
+          <div class="location-row">
+            <div>
+              <p class="job-field-label">City</p>
+              <p class="job-city" id="job-city">—</p>
+            </div>
+            <div>
+              <p class="job-field-label">Location</p>
+              <p class="job-location" id="job-location">—</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Track Job Action Box (Phase 6) -->
+        <div class="track-action-box">
+          <button id="btn-track-job" class="btn-track">
+            <span id="track-btn-icon">📌</span>
+            <span id="track-btn-text">Track This Job</span>
+          </button>
+          <div id="tracked-status-controls" class="tracked-status-wrap hidden">
+            <label class="status-label">Status:</label>
+            <select id="select-job-status" class="status-dropdown">
+              <option value="Saved">Saved</option>
+              <option value="Applied">Applied</option>
+              <option value="Interviewing">Interviewing</option>
+              <option value="Offer">Offer</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Skills Snapshot in Overview -->
+        <div class="quick-skills-section">
+          <div class="section-title-row">
+            <span class="section-subheading">Key Job Skills</span>
+            <span id="quick-skills-count" class="pill-badge">0 found</span>
+          </div>
+          <div id="quick-skills-list" class="skills-wrap">
+            <span class="empty-note">Click "Extract Job Info" to detect skills.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: Match Breakdown (Phase 4) -->
+      <section id="tab-match" class="tab-panel card hidden">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-heading">Job Match Analysis</h2>
+            <p class="panel-subheading">Based on your saved profile skills</p>
+          </div>
+          <span id="match-pill-badge" class="score-pill score-neutral">0% Match</span>
+        </div>
+
+        <!-- Matching Skills Section -->
+        <div class="match-section-group">
+          <div class="match-section-title green-text">
+            <span>✅ Matched Skills (<span id="matched-count">0</span>)</span>
+          </div>
+          <div id="matched-skills-list" class="skills-wrap">
+            <span class="empty-note">No matching skills yet. Add skills in the Profile tab.</span>
+          </div>
+        </div>
+
+        <!-- Missing Skills Section (Gap Analysis) -->
+        <div class="match-section-group">
+          <div class="match-section-title orange-text">
+            <span>⚠️ Missing / Gap Skills (<span id="missing-count">0</span>)</span>
+          </div>
+          <div id="missing-skills-list" class="skills-wrap">
+            <span class="empty-note">None detected.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 3: Skills (Phase 2) -->
+      <section id="tab-skills" class="tab-panel card hidden">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-heading">All Job Skills</h2>
+            <p class="panel-subheading">Categorized by domain</p>
+          </div>
+          <button id="btn-copy-skills" class="btn-sm" title="Copy all skills to clipboard">
+            <span>📋</span> Copy
+          </button>
+        </div>
+
+        <div id="skills-container" class="skills-categories-container">
+          <!-- Populated by popup.js -->
+        </div>
+
+        <div id="no-skills-detected" class="no-skills-msg hidden">
+          <p>No specific tech skills recognized in the description text.</p>
+        </div>
+      </section>
+
+      <!-- Tab 4: AI Tools (Phase 5) -->
+      <section id="tab-ai" class="tab-panel card hidden">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-heading">🤖 AI Career Assistant</h2>
+            <p class="panel-subheading">Personalized to this job & your profile</p>
+          </div>
+          <button id="btn-toggle-ai-settings" class="btn-sm" title="Configure Gemini API Key">
+            <span>⚙️</span> API Key
+          </button>
+        </div>
+
+        <!-- AI Settings Box (Collapsible) -->
+        <div id="ai-settings-box" class="ai-settings-drawer hidden">
+          <p class="settings-helper-text">
+            Enter your free Google Gemini API Key for live LLM generation, or leave blank to use the built-in AI engine.
+          </p>
+          <div class="input-row">
+            <input type="password" id="input-gemini-key" class="input-text" placeholder="AIzaSy... (Gemini API Key)" />
+            <button id="btn-save-gemini-key" class="btn-sm btn-accent">Save</button>
+          </div>
+          <p class="key-status-row">
+            <span id="ai-engine-status" class="status-indicator">⚡ Built-in Engine Active</span>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="free-key-link">Get Free Key ↗</a>
+          </p>
+        </div>
+
+        <!-- AI Sub-Tool Switcher -->
+        <div class="ai-subtabs">
+          <button class="ai-subtab-btn active" data-subtool="cover-letter">
+            <span>📝</span> Cover Letter
+          </button>
+          <button class="ai-subtab-btn" data-subtool="interview-prep">
+            <span>🎯</span> Interview Q&A
+          </button>
+          <button class="ai-subtab-btn" data-subtool="resume-tailoring">
+            <span>✨</span> ATS Resume Tips
+          </button>
+        </div>
+
+        <!-- Sub-Tool 1: Cover Letter Controls -->
+        <div id="subtool-cover-letter" class="subtool-panel">
+          <div class="ai-control-row">
+            <label class="control-label">Tone:</label>
+            <select id="select-cover-tone" class="select-dropdown">
+              <option value="professional">Professional & Polished</option>
+              <option value="enthusiastic">Enthusiastic & Passionate</option>
+              <option value="concise">Direct & Concise</option>
+            </select>
+            <button id="btn-generate-cover" class="btn-sm btn-generate">
+              <span>✨</span> Generate
+            </button>
+          </div>
+        </div>
+
+        <!-- Sub-Tool 2: Interview Prep Controls -->
+        <div id="subtool-interview-prep" class="subtool-panel hidden">
+          <div class="ai-control-row">
+            <label class="control-label">Focus:</label>
+            <select id="select-interview-focus" class="select-dropdown">
+              <option value="technical">Technical Skills & Concepts</option>
+              <option value="behavioral">Role & Behavioral Scenarios</option>
+              <option value="to-ask">Smart Questions to Ask</option>
+            </select>
+            <button id="btn-generate-interview" class="btn-sm btn-generate">
+              <span>✨</span> Generate
+            </button>
+          </div>
+        </div>
+
+        <!-- Sub-Tool 3: Resume Tailoring Controls -->
+        <div id="subtool-resume-tailoring" class="subtool-panel hidden">
+          <div class="ai-control-row">
+            <label class="control-label">Advice:</label>
+            <select id="select-ats-focus" class="select-dropdown">
+              <option value="bullet-points">High-Impact Bullet Points</option>
+              <option value="keywords">Essential ATS Keywords</option>
+              <option value="gap-strategy">Skill Gap Strategy</option>
+            </select>
+            <button id="btn-generate-ats" class="btn-sm btn-generate">
+              <span>✨</span> Generate
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading State Indicator -->
+        <div id="ai-loading-box" class="ai-loading-indicator hidden">
+          <div class="spinner"></div>
+          <span id="ai-loading-text">Generating with AI...</span>
+        </div>
+
+        <!-- AI Output Display Box -->
+        <div id="ai-result-card" class="ai-result-box hidden">
+          <div class="result-header">
+            <span id="ai-result-title" class="result-title">Generated Result</span>
+            <button id="btn-copy-ai" class="btn-sm" title="Copy to clipboard">
+              <span>📋</span> Copy
+            </button>
+          </div>
+          <div id="ai-output-text" class="ai-output-content"></div>
+        </div>
+      </section>
+
+      <!-- Tab: Application Tracker (Phase 6) -->
+      <section id="tab-tracker" class="tab-panel card hidden">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-heading">Application Tracker</h2>
+            <p class="panel-subheading">Manage your job pipeline & metrics</p>
+          </div>
+          <button id="btn-open-dashboard" class="btn-sm btn-accent" title="Open Full Dashboard in New Tab">
+            <span>🚀</span> Dashboard ↗
+          </button>
+        </div>
+
+        <!-- Tracker Quick Stats Bar -->
+        <div class="mini-metrics-row">
+          <div class="mini-metric">
+            <span class="mini-metric-num" id="mini-metric-total">0</span>
+            <span class="mini-metric-lbl">Total</span>
+          </div>
+          <div class="mini-metric">
+            <span class="mini-metric-num" id="mini-metric-applied">0</span>
+            <span class="mini-metric-lbl">Applied</span>
+          </div>
+          <div class="mini-metric">
+            <span class="mini-metric-num" id="mini-metric-interview">0</span>
+            <span class="mini-metric-lbl">Interview</span>
+          </div>
+          <div class="mini-metric">
+            <span class="mini-metric-num" id="mini-metric-offers">0</span>
+            <span class="mini-metric-lbl">Offers</span>
+          </div>
+          <div class="mini-metric">
+            <span class="mini-metric-num" id="mini-metric-avg">0%</span>
+            <span class="mini-metric-lbl">Avg Match</span>
+          </div>
+        </div>
+
+        <!-- Tracked Jobs Quick List Header -->
+        <div class="tracker-list-header">
+          <span class="section-subheading">Tracked Applications:</span>
+          <button id="btn-export-csv-popup" class="btn-text-action" title="Export as CSV">📥 Export CSV</button>
+        </div>
+
+        <!-- Tracked Jobs Quick List -->
+        <div id="popup-tracker-list" class="popup-tracker-list">
+          <!-- Populated by popup.js -->
+        </div>
+
+        <!-- Empty State in Tracker Tab -->
+        <div id="popup-tracker-empty" class="popup-tracker-empty-msg hidden">
+          <div style="font-size: 24px; margin-bottom: 4px;">📂</div>
+          <p style="font-weight: 600; color: #475569;">No tracked applications yet</p>
+          <p style="font-size: 11px; color: #94a3b8; margin-top: 2px;">Click "📌 Track This Job" on the Overview tab to save jobs here!</p>
+        </div>
+      </section>
+
+      <!-- Tab 5: User Profile / Resume (Phase 3) -->
+      <section id="tab-profile" class="tab-panel card hidden">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-heading">My Skills Profile</h2>
+            <p class="panel-subheading">Used to calculate your job match score</p>
+          </div>
+          <span id="profile-skills-count" class="pill-badge">0 saved</span>
+        </div>
+
+        <!-- Add Skill Input -->
+        <div class="add-skill-box">
+          <input type="text" id="input-new-skill" class="input-text" placeholder="Type a skill (e.g. Python, AWS)..." />
+          <button id="btn-add-skill" class="btn-sm btn-accent">+ Add</button>
+        </div>
+
+        <!-- Quick Suggestions -->
+        <div class="quick-suggest-row">
+          <span class="suggest-label">Suggestions:</span>
+          <div id="suggest-chips" class="suggest-chips-wrap">
+            <!-- Chips dynamically generated -->
+          </div>
+        </div>
+
+        <!-- User Saved Skills Wrap -->
+        <div class="my-skills-header-row">
+          <span class="section-subheading">Your Skills:</span>
+          <button id="btn-clear-profile" class="btn-text-danger">Clear All</button>
+        </div>
+        <div id="user-skills-list" class="user-skills-wrap">
+          <span class="empty-note">No skills added yet. Add your skills or paste your resume below!</span>
+        </div>
+
+        <!-- Resume Auto-Extraction Box -->
+        <div class="resume-import-box">
+          <span class="section-subheading">⚡ Auto-Extract from Resume:</span>
+          <textarea id="resume-text-input" class="resume-textarea" placeholder="Paste your resume or bullet points here to automatically extract your skills..."></textarea>
+          <button id="btn-extract-resume" class="btn-sm btn-full">
+            <span>✨</span> Extract & Save Skills from Resume
+          </button>
+        </div>
+      </section>
+
+      <!-- Tab 6: Description -->
+      <section id="tab-desc" class="tab-panel card hidden">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-heading">About the Job</h2>
+            <p id="desc-word-count" class="panel-subheading">0 words</p>
+          </div>
+          <button id="btn-copy-desc" class="btn-sm" title="Copy full job description">
+            <span>📋</span> Copy
+          </button>
+        </div>
+
+        <div class="description-scroll-box">
+          <div id="job-description-text" class="description-text">
+            No description found.
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Empty state (shown when not on a job page) -->
+    <section id="no-job-card" class="card card-empty">
+      <div class="empty-icon">🔍</div>
+      <p class="empty-title">No job detected</p>
+      <p class="empty-subtitle">Open a LinkedIn job posting,<br/>then click Extract.</p>
+    </section>
+
+  </main>
+
+  <!-- ── Footer / Actions ────────────────────────────────────── -->
+  <footer class="footer">
+    <button id="btn-extract" class="btn btn-primary" disabled>
+      <span>⚡</span> Extract Job Info
+    </button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

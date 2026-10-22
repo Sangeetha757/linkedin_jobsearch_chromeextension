@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Application Dashboard — Job Search Assistant</title>
+  <link rel="stylesheet" href="tracker.css" />
+</head>
+<body>
+
+  <!-- ── Top Navigation Bar ──────────────────────────────────── -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">💼</span>
+      <div>
+        <h1 class="brand-title">Job Search Assistant</h1>
+        <p class="brand-subtitle">Application Tracker & Analytics Dashboard</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="btn-export-csv" class="btn btn-secondary">
+        <span>📥</span> Export CSV
+      </button>
+      <button id="btn-refresh-dashboard" class="btn btn-secondary">
+        <span>🔄</span> Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main Dashboard Container ────────────────────────────── -->
+  <main class="dashboard-container">
+
+    <!-- ── Metrics Overview Grid ─────────────────────────────── -->
+    <section class="metrics-grid">
+      <div class="metric-card card-total">
+        <div class="metric-icon">📋</div>
+        <div class="metric-data">
+          <span class="metric-label">Total Tracked</span>
+          <span id="metric-total" class="metric-value">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card card-applied">
+        <div class="metric-icon">🚀</div>
+        <div class="metric-data">
+          <span class="metric-label">Applied</span>
+          <span id="metric-applied" class="metric-value">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card card-interview">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-data">
+          <span class="metric-label">Interviewing</span>
+          <span id="metric-interview" class="metric-value">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card card-offer">
+        <div class="metric-icon">🏆</div>
+        <div class="metric-data">
+          <span class="metric-label">Offers</span>
+          <span id="metric-offers" class="metric-value">0</span>
+        </div>
+      </div>
+
+      <div class="metric-card card-avg">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-data">
+          <span class="metric-label">Avg Match Score</span>
+          <span id="metric-avg-score" class="metric-value">0%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Controls: Search & Status Filter ──────────────────── -->
+    <section class="controls-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="input-search" class="search-input" placeholder="Search by job title, company, or city..." />
+      </div>
+
+      <div class="filter-pills" id="filter-pills">
+        <button class="filter-pill active" data-filter="all">All (<span id="count-all">0</span>)</button>
+        <button class="filter-pill" data-filter="Saved">Saved (<span id="count-saved">0</span>)</button>
+        <button class="filter-pill" data-filter="Applied">Applied (<span id="count-applied">0</span>)</button>
+        <button class="filter-pill" data-filter="Interviewing">Interviewing (<span id="count-interviewing">0</span>)</button>
+        <button class="filter-pill" data-filter="Offer">Offer (<span id="count-offer">0</span>)</button>
+        <button class="filter-pill" data-filter="Rejected">Rejected (<span id="count-rejected">0</span>)</button>
+      </div>
+    </section>
+
+    <!-- ── Tracked Jobs List / Grid ──────────────────────────── -->
+    <section class="jobs-list-container">
+      <div id="jobs-grid" class="jobs-grid">
+        <!-- Rendered by tracker.js -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-icon">📂</div>
+        <h2 class="empty-title">No applications tracked yet</h2>
+        <p class="empty-text">Open any LinkedIn job posting, click the 💼 extension popup, and click <strong>"📌 Track This Job"</strong>.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="tracker.js"></script>
+</body>
+</html>
